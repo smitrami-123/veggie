@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import path
-from .views import product_grid
+from .views import product
 
 urlpatterns = [
-    path('', product_grid)
+    # /product/
+    path('', product, name='product'),
 ]

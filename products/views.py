@@ -1,7 +1,15 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from .models import Product
 # Create your views here.
 
-def product_grid(request):
-    return render(request, 'products/product.html')
+all_products = Product.objects.all
+
+
+def product(request):
+    context = {
+        'all_products':all_products
+    }
+    return render(request, 'products/product.html',context)
+
+
 
