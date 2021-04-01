@@ -4,4 +4,5 @@ from django.db import models
 
 class Carousel(models.Model):
     carousel_img = models.ImageField(upload_to='carousel/')
-    label = models.CharField(max_length=50)
+    label = models.CharField(max_length=50, default='')
+    title = models.CharField(max_length=100, default='')

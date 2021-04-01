@@ -1,4 +1,21 @@
 {% extends "products/base.html" %}
 {% block body%}
-<h2>This is from Index page</h2>
+<section id="home-section" class="hero">
+<div class="home-slider owl-carousel">
+    {% for item in items %}
+<div class="slider-item" style="background-image: url({{item.carousel_img.url}});">
+
+<div class="container">
+<div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+<div class="col-md-12 ftco-animate text-center">
+<h1 class="mb-2" style = "color : black">{{item.label}}</h1>
+<!--<h2 class="subheading mb-4">We deliver organic vegetables &amp; fruits</h2>-->
+<p><a href="#" class="btn btn-primary">Shop </a></p>
+</div>
+</div>
+</div>
+</div>
+    {% endfor %}
+</div>
+</section>
 {% endblock %}
