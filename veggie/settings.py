@@ -15,6 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
+REPOSITORY_ROOT = os.path.dirname(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -122,4 +123,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATIC_DIR]
 
 
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(REPOSITORY_ROOT, 'media/')
