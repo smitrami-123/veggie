@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+
 class Product(models.Model):
     product_name = models.CharField(max_length=30)
     product_price = models.IntegerField(default=0)
