@@ -11,7 +11,8 @@ urlpatterns = [
     path('about/', include('about.urls')),
     path('home/', include('home.urls')),
     path('contact/', include('contact.urls')),
-    path('account/', include('accounts.urls'))
+    path('account/', include('accounts.urls')),
+
 ]
 
 if settings.DEBUG:
