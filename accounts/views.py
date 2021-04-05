@@ -35,7 +35,7 @@ def SignOut(request):
     logout(request)
     return redirect('/account/SignIn/')
 
-login_required(login_url='/account/SignIn/')
+@login_required(login_url='/account/SignIn/')
 def userInfo(request):
     return render(request,'accounts/userinfo.html')
 
