@@ -39,12 +39,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'products',
     'home',
     'about',
     'blog',
     'contact',
     'accounts',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     
 ]
 
@@ -75,6 +80,13 @@ TEMPLATES = [
         },
     },
 ]
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 
 WSGI_APPLICATION = 'veggie.wsgi.application'
 
@@ -134,3 +146,18 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(REPOSITORY_ROOT, 'media/')
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+SITE_ID = 2
+LOGIN_REDIRECT_URL = '/accounts/SignIn'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
