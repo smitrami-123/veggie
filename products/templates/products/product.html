@@ -4,34 +4,35 @@
 
 <section class="ftco-section">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-10 mb-5 text-center">
-                <ul class="product-category">
-                    <li><a href="#" class="active">All</a></li>
-                    <li><a href="#">Vegetables</a></li>
-                    <li><a href="#">Fruits</a></li>
-                    <li><a href="#">Juice</a></li>
-                    <li><a href="#">Dried</a></li>
-                </ul>
-            </div>
-        </div>
+<!--        <div class="row justify-content-center">-->
+<!--            <div class="col-md-10 mb-5 text-center">-->
+<!--                <ul class="product-category">-->
+<!--                    <li><a href="#" class="active">All</a></li>-->
+<!--                    <li><a href="#">Vegetables</a></li>-->
+<!--                    <li><a href="#">Fruits</a></li>-->
+<!--                    <li><a href="#">Juice</a></li>-->
+<!--                    <li><a href="#">Dried</a></li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
         <div class="row">
-<!--            sdvhasgd-->
-            {% for product in all_products %}
+            {% for product in page_products %}
             <a href="#"
                class="add-to-cart d-flex justify-content-center align-items-center text-center">
             <div class="col-md-6 col-lg-3 ftco-animate">
                 <div class="product">
-                    <a href="#" class="img-prod"><img class="img-fluid" src="{{ product.product_img.url }}"
-                                                      alt="Unable to load Image">
-                        <span class="status">30%</span>
+                    <a href="#" class="img-prod">
+                        <img class="img-fluid" src="{{ product.product_img.url }}" alt="Unable to load Image">
+<!--Discounts                        <span class="status">30%</span>-->
                         <div class="overlay"></div>
                     </a>
                     <div class="text py-3 pb-4 px-3 text-center">
                         <h3><a href="#">{{ product.product_name }} </a></h3>
                         <div class="d-flex">
                             <div class="pricing">
-                                <p class="price"><span class="mr-2 price-dc">₹120.00</span><span class="price-sale">₹{{ product.product_price }}</span>
+                                <p class="price">
+                                    <span class="mr-2 price-dc">₹120.00</span>
+                                    <span class="price-sale">₹{{ product.product_price }}</span>
                                 </p>
                             </div>
                         </div>
@@ -59,13 +60,19 @@
             <div class="col text-center">
                 <div class="block-27">
                     <ul>
-                        <li><a href="#">&lt;</a></li>
-                        <li class="active"><span>1</span></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li><a href="#">&gt;</a></li>
+                        {% if page_products.has_previous %}
+                            <li><a href="?page={{ page_products.previous_page_number }}">&lt;</a></li>
+                        {% endif %}
+                        {% for index in num_pages %}
+                            {% if index == page_products.number %}
+                                <li class="active"><span> {{ index }} </span></li>
+                            {% else %}
+                                <li><a href="?page={{ index }}"> {{ index }} </a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_products.has_next %}
+                            <li><a href="?page={{ page_products.next_page_number }}">&gt;</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
