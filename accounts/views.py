@@ -39,16 +39,5 @@ def SignOut(request):
 def userInfo(request):
     return render(request,'accounts/userinfo.html')
 
-# def register(request):
-#     form = CreateUserForm()
-#     if request.method == 'POST':
-#         form = CreateUserForm(request.POST)
-#         # form.username = form.email
-#         if form.is_valid():
-#             form.save()
-#     context = {'form': form}
-#     return render(request,'accounts/Register.html',context)
-#
-# def Login(request):
-#
-#     return render(request, 'accounts/goin.html')
+def tokenSent(request):
+    return  render(request,'accounts/token_sent.html')
