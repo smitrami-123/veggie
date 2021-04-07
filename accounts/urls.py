@@ -7,6 +7,9 @@ urlpatterns = [
    path('SignUp/', SignUp),
    path('userinfo/',userInfo),
    path('SignOut/', SignOut,name = 'logout'),
-   path('token_sent/', tokenSent)
+   path('token_sent/', tokenSent),
+   path('verify/<auth_token>/', verify),
+   path('error/',errorOccured)
+
 
 ]

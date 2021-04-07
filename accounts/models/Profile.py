@@ -1,5 +1,5 @@
 from django.db import models
-from   .customUserModel import CustomUser, CustomUserManager
+from .customUserModel import CustomUser
 
 
 class Profile(models.Model):
