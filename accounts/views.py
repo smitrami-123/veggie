@@ -9,9 +9,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile
 from .models.customUserModel import CustomUser
 import uuid
+from .decorators import unauthenticated_user
 # Create your views here.
 
-
+@unauthenticated_user
 def SignUp(request):
     form = CreateUserForm()
     if request.method == 'POST':
@@ -28,7 +29,7 @@ def SignUp(request):
     context = {'form': form}
     return render(request, 'accounts/signup.html', context)
 
-
+@unauthenticated_user
 def SignIn(request):
     if request.method == 'POST':
         email = request.POST.get('email')
