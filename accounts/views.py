@@ -34,7 +34,14 @@ def SignIn(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         user = authenticate(request,email=email, password=password)
+
         if user is not None :
+            user_obj = CustomUser.objects.get(email=email)
+            profile_obj = Profile.objects.get(user=user_obj)
+            if not profile_obj.is_verified :
+                messages.success(request, 'Your Account is not yet verified.')
+                messages.success(request, 'Please Check your mail box')
+                return redirect('/account/SignIn/')
             login(request,user)
             return redirect('/home/')
         else:
@@ -49,10 +56,12 @@ def SignOut(request):
 
 @login_required(login_url='/account/SignIn/')
 def userInfo(request):
-    return render(request,'accounts/userinfo.html')
+    return render(request, 'accounts/userinfo.html')
+
 
 def tokenSent(request):
-    return  render(request,'accounts/token_sent.html')
+    return  render(request, 'accounts/token_sent.html')
+
 
 def send_mail_after_signup(auth_token, email):
     subject = "VeggieChip verification Mail"
@@ -61,12 +70,17 @@ def send_mail_after_signup(auth_token, email):
     recipient_list = [email]
     send_mail(subject,message,email_from,recipient_list)
 
-def verify(request, auth_token) :
-    try :
-        profile_obj = Profile.objects.filter(auth_token=auth_token).first()
+
+def verify(request, auth_token):
+    try:
+        profile_obj = Profile.objects.get(auth_token=auth_token)
         if profile_obj:
+            if profile_obj.is_verified :
+                messages.success(request, 'Your Account has been already verified')
+                return redirect('/account/SignIn/')
             profile_obj.is_verified = True
-            messages.success(request, 'Your Account has benn verified')
+            profile_obj.save()
+            messages.success(request, 'Your Account has been verified')
             return redirect('/account/SignIn/')
         else :
             return redirect('account/error/')
