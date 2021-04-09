@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load socialaccount %}
 {% load static %}
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,7 +60,7 @@
                         <ul class="socials">
                             <li><a href="#"><i class="display-flex-center zmdi zmdi-facebook"></i></a></li>
                             <li><a href="#"><i class="display-flex-center zmdi zmdi-twitter"></i></a></li>
-                            <li><a href="#"><i class="display-flex-center zmdi zmdi-google"></i></a></li>
+                            <li><a href="{% provider_login_url 'google' %}"><i class="display-flex-center zmdi zmdi-google"></i></a></li>
                         </ul>
                     </div>
                 </div>
