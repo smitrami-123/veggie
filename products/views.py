@@ -16,3 +16,16 @@ def product(request):
         'num_pages': page_range,
     }
     return render(request, 'products/product.html', context)
+
+
+def detail(request, product_id):
+    product_obj = Product.objects.get(pk=product_id)
+    # product_obj = list(obj)
+    p_range = range(0, int(product_obj.product_ratings))
+    # converted to int as the float can't be passed to range func
+    context = {
+        'product_obj': product_obj,
+        'p_range': p_range,
+        'p_text': product_obj.product_des,
+    }
+    return render(request, 'products/detail_page.html', context)
