@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from .models import Product
+from .models.product import *
 # Create your views here.
 
 
@@ -19,13 +19,13 @@ def product(request):
 
 
 def detail(request, product_id):
-    product_obj = Product.objects.get(pk=product_id)
-    # product_obj = list(obj)
+    product_obj = get_object_or_404(Product, pk=product_id)
+    gallery = ProdGallery.objects.filter(image_link=product_id)
     p_range = range(0, int(product_obj.product_ratings))
     # converted to int as the float can't be passed to range func
     context = {
         'product_obj': product_obj,
         'p_range': p_range,
-        'p_text': product_obj.product_des,
+        'gallery': gallery,
     }
     return render(request, 'products/detail_page.html', context)
