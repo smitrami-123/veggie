@@ -9,5 +9,5 @@ urlpatterns = [
     path('', product, name='product'),
 
     # /product/num/
-    path('<int:product_id>/', detail, name='detail'),
+    path('<int:product_id>/', detail.as_view(), name='detail'),
 ]

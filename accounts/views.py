@@ -44,6 +44,8 @@ def SignIn(request):
                 messages.success(request, 'Please Check your mail box')
                 return redirect('/account/SignIn/')
             login(request,user)
+            request.session['user_id'] = user_obj.id
+            request.session['user_email'] = user_obj.email
             return redirect('/home/')
         else:
             messages.info(request, 'Credentials are incorrect')

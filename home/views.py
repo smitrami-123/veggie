@@ -6,4 +6,5 @@ def index(request):
     context = {
         'items' : items
     }
+    print('Your email :', request.session.get('user_email'))
     return render(request, 'home/index.html', context)
