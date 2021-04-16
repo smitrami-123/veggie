@@ -5,6 +5,33 @@ from django.views import View
 # Create your views here.
 
 
+class cart(View):
+    def get(self,request):
+        cart = request.session.get('cart')
+        if not cart:
+            request.session['cart'] = {}
+        ids = list(request.session.get('cart').keys())
+        products = Product.get_products_by_id(ids=ids)
+        print(products)
+        return render(request,'products/cart.html',{'products' : products})
+
+    def post(self,request):
+        product = request.POST.get('product')
+        cart = request.session.get('cart')
+        cancel = False
+        cancel = request.POST.get('cancel')
+        # print(cancel)
+        if cart :
+            quantity = cart.get(product)
+            if quantity :
+                if cancel :
+                    # print("Yeah__Cancelled")
+                    cart.pop(product)
+        request.session['cart'] = cart
+        print(cart)
+        return redirect("products:cart")
+
+
 def product(request):
     all_products = Product.objects.all().order_by('pk')
     paginator = Paginator(all_products, 12)

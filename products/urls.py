@@ -10,4 +10,5 @@ urlpatterns = [
 
     # /product/num/
     path('<int:product_id>/', detail.as_view(), name='detail'),
+    path('cart/',cart.as_view(), name='cart')
 ]
