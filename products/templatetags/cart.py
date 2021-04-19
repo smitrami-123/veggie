@@ -39,4 +39,12 @@ def cart_total_quan(products, cart) :
         sum += cart_quantity(p,cart)
     return sum
 
+# @register.filter(name='global_total_quan')
+# def global_total_quan(cart) :
+#     products = cart.keys()
+#     sum = 0
+#     for p in products :
+#         sum += 1
+#     return sum
+
 

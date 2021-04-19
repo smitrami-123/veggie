@@ -1,8 +1,9 @@
 {% extends "products/base.html" %}
 {% block body%}
+{% load cart %}
 <!--<h2>This is from products page</h2>-->
 
-<section class="ftco-section">
+<section class="ftco-section" xmlns="http://www.w3.org/1999/html">
     <div class="container">
 <!--        <div class="row justify-content-center">-->
 <!--            <div class="col-md-10 mb-5 text-center">-->
@@ -42,12 +43,27 @@
                                    class="add-to-cart d-flex justify-content-center align-items-center text-center">
                                     <span><i class="ion-ios-menu"></i></span>
                                 </a>-->
-                                <a href="#" data-product = {{product.id}} data-action="add" class="buy-now d-flex justify-content-center align-items-center mx-1 update-cart">
-                                    <span><i class="ion-ios-cart"></i></span>
-                                </a>
-                                <a href="#" class="heart d-flex justify-content-center align-items-center ">
-                                    <span><i class="ion-ios-heart"></i></span>
-                                </a>
+                                {% if product|is_in_cart:request.session.cart%}
+                                <form action = "/product/" method="POST">
+                                    {% csrf_token %}
+                                    <input hidden type="text" name = 'product' value='{{product.id}}'>
+                                    <input hidden type="text" name = 'remove' value='True'>
+                                    <button type="submit" data-product = {{product.id}} data-action="add" class="buy-now d-flex justify-content-center align-items-center mx-1 update-cart btn btn-danger">
+                                        <span><i class="ion-ios-close"></i></span>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <form action = "/product/" method="POST">
+                                    {% csrf_token %}
+                                    <input hidden type="text" name = 'product' value='{{product.id}}'>
+                                    <button type="submit" data-product = {{product.id}} data-action="add" class="buy-now d-flex justify-content-center align-items-center mx-1 update-cart btn btn-success">
+                                        <span><i class="ion-ios-cart"></i></span>
+                                    </button>
+                                </form>
+                                {% endif %}
+<!--                                <a href="#" class="heart d-flex justify-content-center align-items-center ">-->
+<!--                                    <span><i class="ion-ios-heart"></i></span>-->
+<!--                                </a>-->
                             </div>
                         </div>
                     </div>

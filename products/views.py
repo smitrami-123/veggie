@@ -31,19 +31,59 @@ class cart(View):
         print(cart)
         return redirect("products:cart")
 
+class product(View):
+    def get(self,request):
+        all_products = Product.objects.all().order_by('pk')
+        paginator = Paginator(all_products, 12)
+        page_num = request.GET.get('page')
+        page_products = paginator.get_page(page_num)
+        num_pages = paginator.num_pages + 1
+        page_range = range(1, num_pages)
+        context = {
+            'page_products': page_products,
+            'num_pages': page_range,
+        }
+        return render(request, 'products/product.html', context)
+    def post(self,request):
+        product = request.POST.get('product')
+        remove = False
+        remove = request.POST.get('remove')
+        cart = request.session.get('cart')
 
-def product(request):
-    all_products = Product.objects.all().order_by('pk')
-    paginator = Paginator(all_products, 12)
-    page_num = request.GET.get('page')
-    page_products = paginator.get_page(page_num)
-    num_pages = paginator.num_pages + 1
-    page_range = range(1, num_pages)
-    context = {
-        'page_products': page_products,
-        'num_pages': page_range,
-    }
-    return render(request, 'products/product.html', context)
+        if cart:
+            quantity = cart.get(product)
+            if quantity:
+                if remove:
+                    cart.pop(product)
+                else:
+                    cart[product] = quantity + 1
+            else:
+                if not remove:
+                    cart[product] = 1
+
+
+        else:
+            cart = {}
+            cart[product] = 1
+        # print(product,'product')
+
+        request.session['cart'] = cart
+        print(request.session.get('user_email'), ":", request.session['cart'])
+
+        return redirect('/product/')
+
+# def product(request):
+#     all_products = Product.objects.all().order_by('pk')
+#     paginator = Paginator(all_products, 12)
+#     page_num = request.GET.get('page')
+#     page_products = paginator.get_page(page_num)
+#     num_pages = paginator.num_pages + 1
+#     page_range = range(1, num_pages)
+#     context = {
+#         'page_products': page_products,
+#         'num_pages': page_range,
+#     }
+#     return render(request, 'products/product.html', context)
 
 class detail(View):
     def get(self, request, product_id) :

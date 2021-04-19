@@ -6,7 +6,7 @@ app_name = 'products'
 
 urlpatterns = [
     # /product/
-    path('', product, name='product'),
+    path('', product.as_view(), name='product'),
 
     # /product/num/
     path('<int:product_id>/', detail.as_view(), name='detail'),

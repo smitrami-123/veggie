@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Sign Up Form by Colorlib</title>
+    <title>VeggieChip</title>
 
     <!-- Font Icon -->
     <link rel="stylesheet" href="{% static 'fonts/material-icon/css/material-design-iconic-font.min.css' %}">
@@ -54,7 +54,7 @@
                                 {{form.password2}}
                             </div>
                             <div class="form-group">
-                                <input type="checkbox" name="agree-term" id="agree-term" class="agree-term" />
+                                <input type="checkbox" name="agree-term" id="agree-term" class="agree-term" onchange="document.getElementById('signup').disabled = !this.checked;"  />
                                 <label for="agree-term" class="label-agree-term"><span><span></span></span>I agree all statements in  <a href="#" class="term-service">Terms of service</a></label>
                             </div>
 
@@ -86,5 +86,5 @@
         form_fields[5].placeholder = 'Confirm Password..';
 
     </script>
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</body>
 </html>
