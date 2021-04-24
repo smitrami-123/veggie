@@ -6,9 +6,17 @@ app_name = 'products'
 
 urlpatterns = [
     # /product/
-    path('', product.as_view(), name='product'),
+    path('', product, name='product'),
 
     # /product/num/
-    path('<int:product_id>/', detail.as_view(), name='detail'),
-    path('cart/',cart.as_view(), name='cart')
+    path('<int:product_id>/', detail, name='detail'),
+
+    # /product/cart/
+    path('cart/', cart, name='cart'),
+
+    # product/checkout/
+    path('checkout/', checkout, name='checkout'),
+
+    path('updateItem/', updateItem, name='updateItem'),
+    path('processOrder/', processOrder, name='processOrder')
 ]

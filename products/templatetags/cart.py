@@ -1,8 +1,15 @@
 from django import template
-
+from products.models import *
+import json
 register = template.Library()
 
 
+
+@register.filter(name='identity')
+def identity(email):
+    if email :
+        return True
+    return False
 
 
 @register.filter(name='is_in_cart')
@@ -39,12 +46,29 @@ def cart_total_quan(products, cart) :
         sum += cart_quantity(p,cart)
     return sum
 
-# @register.filter(name='global_total_quan')
-# def global_total_quan(cart) :
-#     products = cart.keys()
-#     sum = 0
-#     for p in products :
-#         sum += 1
-#     return sum
+@register.filter(name='global_total_quan')
+def global_total_quan(request) :
+
+    if request.user.is_authenticated :
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+        return cartItems
+    else :
+        sum = 0
+        try:
+            cart = json.loads(request.COOKIES['cart'])
+        except:
+            cart = {}
+
+        for i in cart:
+            try:
+                product = Product.objects.get(id=i)
+                if product:
+                    sum += cart[i]['quantity']
+            except :
+                pass
+        return sum
 
 

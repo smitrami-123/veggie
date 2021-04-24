@@ -3,9 +3,11 @@
 {% load cart %}
 <html lang="en">
 <head>
-    <title>Vegefoods - Free Bootstrap 4 Template by Colorlib</title>
+    <title>VeggieChip</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&amp;display=swap"
           rel="stylesheet">
@@ -23,12 +25,84 @@
     <link rel="stylesheet" href="{% static 'css/flaticon.css' %}">
     <link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style type='text/css'>
+        .quantityy{
+	display: inline-block;
+	font-weight: 700;
+	padding-right:10px;
+
+
+}
+
+.chg-quantity{
+	width: 12px;
+	cursor: pointer;
+	display: block;
+	margin-top: 5px;
+	transition:.1s;
+}
+
+.chg-quantity:hover{
+	opacity: .6;
+}
+
+    </style>
+
+    <script type="text/javascript">
+        var user =  '{{request.user}}'
+        function getToken(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = cookies[i].trim();
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+		var csrftoken = getToken('csrftoken')
+
+		function getCookie(name) {
+		    // Split cookie string and get all individual name=value pairs in an array
+		    var cookieArr = document.cookie.split(";");
+
+		    // Loop through the array elements
+		    for(var i = 0; i < cookieArr.length; i++) {
+		        var cookiePair = cookieArr[i].split("=");
+
+		        /* Removing whitespace at the beginning of the cookie name
+		        and compare it with the given string */
+		        if(name == cookiePair[0].trim()) {
+		            // Decode the cookie value and return
+		            return decodeURIComponent(cookiePair[1]);
+		        }
+		    }
+
+		    // Return null if not found
+		    return null;
+		}
+		var cart = JSON.parse(getCookie('cart'))
+
+		if (cart == undefined){
+			cart = {}
+			console.log('Cart Created!', cart)
+			document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+		}
+		console.log('Cart:', cart)
+
+    </script>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
-        <a class="navbar-brand" href="/home/">Vegefoods</a>
+        <a class="navbar-brand" href="/home/">ANERI FITFOOD</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
                 aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="oi oi-menu"></span> Menu
@@ -53,15 +127,20 @@
                 <li class="nav-item"><a href="/about/" class="nav-link">About</a></li>
                 <li class="nav-item"><a href="/blog/" class="nav-link">Blog</a></li>
                 <li class="nav-item"><a href="/contact/" class="nav-link">Contact</a></li>
-                <li class="nav-item cta cta-colored"><a href="/account/userinfo/" class="nav-link"><span
-                        ><i class="fa fa-user" aria-hidden="true"></i></span></a></li>
-                <li class="nav-item cta cta-colored"><a href="/product/cart/" class="nav-link"><span
-                        class="icon-shopping_cart"></span>[0]</a></li>
+                {%if request.user.email|identity %}
+                <li class="nav-item"><a href="/account/userinfo/" class="nav-link">Profile</a></li>
+                {% else %}
+                <li class="nav-item"><a href="/account/userinfo/" class="nav-link">LogIn</a></li>
+                {% endif %}
+<!--                <li class="nav-item "><a href="/account/userinfo/" class="nav-link"><span-->
+<!--                ><i class="fa fa-user" aria-hidden="true"></i></span></a></li>-->
+                <li class="nav-item  "><a href="/product/cart/" class="nav-link"><span
+                        class="icon-shopping_cart"></span> [{{request|global_total_quan}}] </a></li>
             </ul>
         </div>
     </div>
 </nav>
-<h1> <p> Hello {{request.user}}</p></h1>
+<h1>Hello {{request.user}}</h1>
 {% block body%}
 {% endblock %}
 
@@ -149,19 +228,7 @@
                 </div>
             </div>
         </div>
-        <!--<div class="row">
-            <div class="col-md-12 text-center">
-                <p>
-                    Copyright &copy;<script data-cfasync="false"
-                                            src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-                    <script>document.write(new Date().getFullYear());</script>
-                    All rights reserved | This template is made with <i class="icon-heart color-danger"
-                                                                        aria-hidden="true"></i> by <a
-                        href="https://colorlib.com/" target="_blank">Colorlib</a>
 
-                </p>
-            </div>
-        </div>-->
     </div>
 </footer>
 
@@ -172,6 +239,18 @@
                 stroke="#F96D00"/>
     </svg>
 </div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'js/jquery-migrate-3.0.1.min.js' %}"></script>
 <script src="{% static 'js/popper.min.js' %}"></script>
@@ -185,10 +264,10 @@
 <script src="{% static 'js/jquery.animateNumber.min.js' %}"></script>
 <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
 <script src="{% static 'js/scrollax.min.js' %}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&amp;sensor=false"></script>
-<script src="{% static 'js/google-map.js' %}"></script>
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&amp;sensor=false"></script>-->
+<!--<script src="{% static 'js/google-map.js' %}"></script>-->
 <script src="{% static 'js/main.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/smitcart.js' %}"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -196,6 +275,8 @@
   gtag('js', new Date());
 
   gtag('config', 'UA-23581568-13');
+
+
 
 </script>
 </body>

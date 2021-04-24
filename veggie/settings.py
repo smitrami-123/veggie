@@ -175,3 +175,5 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'webofveggiechip@gmail.com'
 EMAIL_HOST_PASSWORD = 'zxcvbnm123@Z'
+
+CART_SESSION_ID = 'cart'

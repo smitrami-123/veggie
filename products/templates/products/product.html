@@ -1,6 +1,7 @@
 {% extends "products/base.html" %}
 {% block body%}
 {% load cart %}
+{% load checker %}
 <!--<h2>This is from products page</h2>-->
 
 <section class="ftco-section" xmlns="http://www.w3.org/1999/html">
@@ -23,7 +24,7 @@
             <div class="col-md-6 col-lg-3 ftco-animate">
                 <div class="product">
                     <a href="{% url 'products:detail' product.pk %}" class="img-prod">
-                        <img class="img-fluid" src="{{ product.product_img.url }}" alt="Unable to load Image">
+                        <img class="img-fluid" src="{{ product.imageURL }}" alt="Unable to load Image">
 <!--Discounts                        <span class="status">30%</span>-->
                         <div class="overlay"></div>
                     </a>
@@ -33,34 +34,32 @@
                             <div class="pricing">
                                 <p class="price">
                                     <span class="mr-2 price-dc">₹120.00</span>
-                                    <span class="price-sale">₹ {{ product.product_price }}</span>
+                                    <span class="price-sale">₹ {{ product.product_price|floatformat:2 }}</span>
                                 </p>
                             </div>
                         </div>
                         <div class="bottom-area d-flex px-3">
                             <div class="m-auto d-flex">
-                                <!--<a href="#"
-                                   class="add-to-cart d-flex justify-content-center align-items-center text-center">
-                                    <span><i class="ion-ios-menu"></i></span>
-                                </a>-->
-                                {% if product|is_in_cart:request.session.cart%}
-                                <form action = "/product/" method="POST">
-                                    {% csrf_token %}
-                                    <input hidden type="text" name = 'product' value='{{product.id}}'>
-                                    <input hidden type="text" name = 'remove' value='True'>
-                                    <button type="submit" data-product = {{product.id}} data-action="add" class="buy-now d-flex justify-content-center align-items-center mx-1 update-cart btn btn-danger">
-                                        <span><i class="ion-ios-close"></i></span>
-                                    </button>
-                                </form>
-                                {% else %}
-                                <form action = "/product/" method="POST">
-                                    {% csrf_token %}
-                                    <input hidden type="text" name = 'product' value='{{product.id}}'>
-                                    <button type="submit" data-product = {{product.id}} data-action="add" class="buy-now d-flex justify-content-center align-items-center mx-1 update-cart btn btn-success">
+<!--                                <a href="#"-->
+<!--                                   class="add-to-cart d-flex justify-content-center align-items-center text-center">-->
+<!--                                    <span><i class="ion-ios-menu"></i></span>-->
+<!--                                </a>-->
+
+
+<!--                                    <button class="buy-now d-flex justify-content-center align-items-center mx-1 update-smitcart btn btn-danger">-->
+<!--                                        <span><i class="ion-ios-close"></i></span>-->
+<!--                                    </button>-->
+
+
+
+                                    {% if product.id|is_there:request%}
+                                    <input type="submit" data-product="{{product.id}}" data-action="cancel" class="btn btn-outline-danger update-smitcart" data-type="minus" data-field="x"
+                                           value="x" >
+                                    {% else %}
+                                    <button data-product="{{product.id}}" data-action="add" class="buy-now d-flex justify-content-center align-items-center mx-1 update-smitcart btn btn-success">
                                         <span><i class="ion-ios-cart"></i></span>
                                     </button>
-                                </form>
-                                {% endif %}
+                                    {% endif %}
 <!--                                <a href="#" class="heart d-flex justify-content-center align-items-center ">-->
 <!--                                    <span><i class="ion-ios-heart"></i></span>-->
 <!--                                </a>-->

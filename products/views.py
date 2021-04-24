@@ -1,151 +1,181 @@
 from django.shortcuts import render,redirect
 from django.core.paginator import Paginator
-from .models import Product
-from django.views import View
-# Create your views here.
+from django.http import JsonResponse
+from .models import *
+from .utils import *
+import datetime
+import json
+
+def updateItem(request):
+    data = json.loads(request.body)
+    productId = data['productId']
+    action = data['action']
+    print('Action:',action)
+    print('Product:',productId)
+
+    customer = request.user.customer
+    product = Product.objects.get(id=productId)
+    order, created = Order.objects.get_or_create(customer=customer,complete=False)
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+    if action=='add':
+        orderItem.quantity += 1
+    elif action=='remove':
+        orderItem.quantity -= 1
+    elif action=='cancel' :
+        orderItem.quantity = 0
+
+    orderItem.save()
+
+    if orderItem.quantity<=0 :
+         orderItem.delete()
 
 
-class cart(View):
-    def get(self,request):
-        cart = request.session.get('cart')
-        if not cart:
-            request.session['cart'] = {}
-        ids = list(request.session.get('cart').keys())
-        products = Product.get_products_by_id(ids=ids)
-        print(products)
-        return render(request,'products/cart.html',{'products' : products})
+    return JsonResponse('Item was added', safe=False)
 
-    def post(self,request):
-        product = request.POST.get('product')
-        cart = request.session.get('cart')
-        cancel = False
-        cancel = request.POST.get('cancel')
-        # print(cancel)
-        if cart :
-            quantity = cart.get(product)
-            if quantity :
-                if cancel :
-                    # print("Yeah__Cancelled")
-                    cart.pop(product)
-        request.session['cart'] = cart
-        print(cart)
-        return redirect("products:cart")
-
-class product(View):
-    def get(self,request):
-        all_products = Product.objects.all().order_by('pk')
-        paginator = Paginator(all_products, 12)
-        page_num = request.GET.get('page')
-        page_products = paginator.get_page(page_num)
-        num_pages = paginator.num_pages + 1
-        page_range = range(1, num_pages)
-        context = {
-            'page_products': page_products,
-            'num_pages': page_range,
-        }
-        return render(request, 'products/product.html', context)
-    def post(self,request):
-        product = request.POST.get('product')
-        remove = False
-        remove = request.POST.get('remove')
-        cart = request.session.get('cart')
-
-        if cart:
-            quantity = cart.get(product)
-            if quantity:
-                if remove:
-                    cart.pop(product)
-                else:
-                    cart[product] = quantity + 1
-            else:
-                if not remove:
-                    cart[product] = 1
+def product(request):
+    all_products = Product.objects.all().order_by('pk')
+    paginator = Paginator(all_products, 12)
+    page_num = request.GET.get('page')
+    page_products = paginator.get_page(page_num)
+    num_pages = paginator.num_pages + 1
+    page_range = range(1, num_pages)
+    context = {
+        'page_products': page_products,
+        'num_pages': page_range,
+    }
+    return render(request, 'products/product.html', context)
 
 
-        else:
-            cart = {}
-            cart[product] = 1
-        # print(product,'product')
-
-        request.session['cart'] = cart
-        print(request.session.get('user_email'), ":", request.session['cart'])
-
-        return redirect('/product/')
-
-# def product(request):
-#     all_products = Product.objects.all().order_by('pk')
-#     paginator = Paginator(all_products, 12)
-#     page_num = request.GET.get('page')
-#     page_products = paginator.get_page(page_num)
-#     num_pages = paginator.num_pages + 1
-#     page_range = range(1, num_pages)
-#     context = {
-#         'page_products': page_products,
-#         'num_pages': page_range,
-#     }
-#     return render(request, 'products/product.html', context)
-
-class detail(View):
-    def get(self, request, product_id) :
-        cart = request.session.get('cart')
-        if not cart :
-            request.session['cart'] = {}
+def detail(request, product_id):
+    if request.user.is_authenticated:
+        customer = request.user.customer
         product_obj = Product.objects.get(pk=product_id)
-        # product_obj = list(obj)
-        p_range = range(0, int(product_obj.product_ratings))
-        # converted to int as the float can't be passed to range func
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        orderItem, created = OrderItem.objects.get_or_create(order=order, product=product_obj)
+        # p_range = range(0, int(product_obj.product_ratings))
+        cartItems = order.get_cart_items
         context = {
             'product_obj': product_obj,
-            'p_range': p_range,
-            'p_text': product_obj.product_des,
+            'orderItem' : orderItem,
+            # 'p_range': p_range,
+            'cartItems': cartItems,
+
         }
-        #print("product_id :",product_id)
         return render(request, 'products/detail_page.html', context)
+    else :
 
-    def post(self,request,product_id):
-        product= request.POST.get('product')
-        remove = False
-        remove = request.POST.get('remove')
-        cart = request.session.get('cart')
-
-
-        if cart :
-            quantity = cart.get(product)
-            if quantity:
-                if remove :
-                    if quantity<=1 :
-                        cart.pop(product)
-                    else :
-                        cart[product] = quantity - 1
-
-                else :
-                    cart[product]= quantity + 1
-            else :
-                if not remove :
-                    cart[product] = 1
-
-
-        else :
+        orderitems = {'quantity' : 0}
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        try:
+            cart = json.loads(request.COOKIES['cart'])
+        except:
             cart = {}
-            cart[product] = 1
-        #print(product,'product')
-
-        request.session['cart'] = cart
-        print( request.session.get('user_email'),":",request.session['cart'])
-
-        return redirect('products:detail',product_id)
 
 
 
+        product_obj = Product.objects.get(pk=product_id)
+        if product_obj:
+            try :
+                orderitems['quantity'] = cart[str(product_obj.id)]['quantity']
+            except :
+                orderitems['quantity'] = 0
+            context = {
+                    'product_obj': product_obj,
+                    'orderItem': orderitems,
+                    # 'p_range': p_range,
+                    'cartItems': cartItems,
 
-# def detail(request, product_id):
-#     product_obj = Product.objects.get(pk=product_id)
-#     # product_obj = list(obj)
-#     p_range = range(0, int(product_obj.product_ratings))
-#     # converted to int as the float can't be passed to range func
-#     context = {
-#         'product_obj': product_obj,
-#         'p_range': p_range,
-#         'p_text': product_obj.product_des,
-#     }
-#     return render(request, 'products/detail_page.html', context)
+                }
+            return render(request, 'products/detail_page.html', context)
+        else :
+            return redirect('/home/error.html')
+
+
+
+
+
+
+
+
+def cart(request) :
+    data = cartData(request)
+    items = data['items']
+    order = data['order']
+    cartItems = data['cartItems']
+    context = {'items': items, 'order': order, 'cartItems': cartItems}
+    context = {'items': items, 'order': order, 'cartItems':cartItems}
+    return render(request, 'products/cart.html', context)
+
+def checkout(request) :
+    data = cartData(request)
+    items = data['items']
+    order = data['order']
+    cartItems = data['cartItems']
+    context = {'items': items, 'order': order, 'cartItems':cartItems}
+    return render(request,'products/checkout.html',context)
+
+def processOrder(request) :
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+    if request.user.is_authenticated :
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer,complete=False)
+
+
+
+    else :
+        print('User not Authenticate')
+        print('Cookies:',request.COOKIES)
+        fname = data['form']['fname']
+        lname = data['form']['lname']
+        email = data['form']['email']
+
+        cookieData = cookieCart(request)
+        items = cookieData['items']
+
+        customer,created = Customer.objects.get_or_create(
+            email = email,
+        )
+        customer.name = fname
+
+
+        customer.save()
+
+        order = Order.objects.create(
+            customer = customer,
+            complete = False,
+
+        )
+
+        for item in items :
+            product = Product.objects.get(id = item['product']['id'])
+            orderItem = OrderItem.objects.create(
+                product = product,
+                order = order,
+                quantity = item['quantity'],
+            )
+
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    if total == order.get_cart_total:
+        order.complete = True
+    order.save()
+
+    if order.get_cart_items > 0:
+        ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            address1=data['shipping']['address1'],
+            address2=data['shipping']['address2'],
+            nation=data['shipping']['nation'],
+            state=data['shipping']['state'],
+            city=data['shipping']['city'],
+            zipcode=data['shipping']['code'],
+
+        )
+
+    print('Data:', request.body)
+    return JsonResponse('Payment Complete',safe=False)
